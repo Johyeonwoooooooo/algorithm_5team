@@ -1,7 +1,7 @@
 """다차량 솔버 검산: 손계산 예제, 모든 해 열거, 같은 시드 재실행, 결과 폴더의 독립 재계산.
 
 python check_multi.py                          손계산 예제와 재현성만 검사
-python check_multi.py --results results/multi  위 검사 뒤 그 아래 baseline/greedy/sa/alns 결과를 다시 계산해 대조
+python check_multi.py --results results        위 검사 뒤 그 아래 baseline/greedy/sa/alns 결과를 다시 계산해 대조
 """
 import argparse
 import csv

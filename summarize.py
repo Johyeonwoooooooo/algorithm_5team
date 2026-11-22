@@ -1,6 +1,7 @@
-"""results/multi 아래 결과(baseline, greedy, sa, alns)를 모아 SUMMARY.md 를 만든다.
+"""results 아래 결과(baseline, greedy, sa, alns)를 모아 SUMMARY.md 를 만든다.
+반복 한도 비교(extra/limits)와 민감도(extra/sensitivity) 결과가 있으면 함께 요약한다.
 
-python summarize.py                 results/multi/SUMMARY.md 생성
+python summarize.py                 results/SUMMARY.md 생성
 python summarize.py --root 폴더     다른 결과 폴더 요약
 
 아직 돌리지 않은 알고리즘은 "결과 없음"으로 표시한다. matplotlib 이 있으면 수렴 그래프를
@@ -276,8 +277,8 @@ def summarize(root):
 
     def limit(level):
         return tuple(level[m]["settings"]["iterations"] if m in level else None for m in ("sa", "alns"))
-    levels = [(load(folder), folder.name) for folder in sorted((root / "limits").iterdir())
-              if (folder / "baseline").exists()] if (root / "limits").exists() else []
+    levels = [(load(folder), folder.name) for folder in sorted((root / "extra" / "limits").iterdir())
+              if (folder / "baseline").exists()] if (root / "extra" / "limits").exists() else []
     if levels:
         # 이 폴더의 본 실험도 한 단계로 넣는다.
         levels = sorted(levels + [(data, "본 실험")], key=lambda item: [x or 0 for x in limit(item[0])])
@@ -297,8 +298,8 @@ def summarize(root):
                   for level, _ in levels]
         out += [table(["시나리오", "알고리즘"] + header, rows), ""]
 
-    variants = sorted(folder for folder in (root / "sensitivity").iterdir() if (folder / "baseline").exists()) \
-        if (root / "sensitivity").exists() else []
+    variants = sorted(folder for folder in (root / "extra" / "sensitivity").iterdir() if (folder / "baseline").exists()) \
+        if (root / "extra" / "sensitivity").exists() else []
     if variants:
         out += ["## 민감도", "", "가중치를 바꿔 다시 돌린 결과다. 순위는 평균 비용이 낮은 순이다.", ""]
         rows = []
@@ -331,5 +332,5 @@ def summarize(root):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--root", type=Path, default=ROOT / "results" / "multi")
+    parser.add_argument("--root", type=Path, default=ROOT / "results")
     summarize(parser.parse_args().root)

@@ -7,7 +7,7 @@ C2  C 와 같되 SA·ALNS 가 B 의 탐욕 해(기록된 배정)에서 출발. �
 
 python run_multi.py --algo sa          자기 알고리즘만 실행 (greedy / sa / alns / all)
 
-결과는 --output(기본 results/multi) 아래 baseline/, greedy/, sa/, alns/ 폴더에 나뉘어 저장된다.
+결과는 --output(기본 results) 아래 baseline/, greedy/, sa/, alns/ 폴더에 나뉘어 저장된다.
 탐욕 해는 SA·ALNS 의 출발점이라 어떤 --algo 에서도 계산하지만, greedy/ 폴더는 greedy 나 all 일 때만 쓴다.
 """
 import argparse
@@ -31,7 +31,7 @@ from solvers_multi import (LATE_SECOND_COST, LATE_STOP_COST, NEIGHBOURS, POSITIO
 ROOT = Path(__file__).resolve().parent
 SEARCHES = {"sa": sa, "alns": alns}
 # 본 실험의 한도. 한도를 두 배로 늘릴 때마다 평균 비용이 아직 0.1~1.5% 줄어들어 완전히 수렴한 값은 아니다
-# (RESULTS_MULTI.md 의 반복 한도 비교).
+# (docs/RESULTS_MULTI.md 의 반복 한도 비교).
 DEFAULT_ITERATIONS = {"sa": 8_000_000, "alns": 80_000}
 _problem = None
 
@@ -89,7 +89,7 @@ def write_csv(path, rows, empty=()):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--algo", choices=("greedy", "sa", "alns", "all"), default="all", help="돌릴 알고리즘")
-    parser.add_argument("--output", type=Path, default=ROOT / "results" / "multi")
+    parser.add_argument("--output", type=Path, default=ROOT / "results")
     parser.add_argument("--sa-iterations", type=int, default=DEFAULT_ITERATIONS["sa"], help="SA 반복 횟수(이동 시도 횟수)")
     parser.add_argument("--alns-iterations", type=int, default=DEFAULT_ITERATIONS["alns"], help="ALNS 반복 횟수(제거·복구 횟수)")
     parser.add_argument("--seeds", nargs="+", type=int, default=[11, 29, 47, 61, 83])
