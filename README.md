@@ -41,7 +41,7 @@ python run_multi.py --algo greedy    # 탐욕법 담당
 - 결과는 `results/sa/`처럼 알고리즘 이름의 폴더에 저장된다.
 - 기본 설정은 SA 8,000,000회, ALNS 80,000회, 시드 11·29·47·61·83이다. 12코어 PC에서 실행 하나에 SA 5~7분, ALNS 8~17분이 걸렸고, 세 알고리즘을 함께 돌리면 29분이 걸렸다.
 - 동작만 먼저 보려면 `python run_multi.py --algo sa --sa-iterations 200000 --output try_multi`처럼 작게 돌린다. `try_multi`는 커밋되지 않는다.
-- 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. 저장소에 이미 들어 있는 결과와 `git diff`로 비교했을 때 실행시간(`runtime_seconds`)과 `settings.json`의 PC 정보만 달라야 한다. 다른 값이 달라지면 팀에 알린다.
+- 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. 저장소에 이미 들어 있는 결과와 `git diff`로 비교했을 때 실행시간(`runtime_seconds`)과 `settings.json`의 PC 정보(`python`, `platform`, `solver_sha256`)만 달라야 한다. 다른 값이 달라지면 팀에 알린다.
 - `--jobs`는 동시에 쓰는 프로세스 수이고 결과에는 영향이 없다.
 
 **4. 결과 검산**
