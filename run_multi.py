@@ -30,8 +30,9 @@ from solvers_multi import (LATE_SECOND_COST, LATE_STOP_COST, NEIGHBOURS, POSITIO
 
 ROOT = Path(__file__).resolve().parent
 SEARCHES = {"sa": sa, "alns": alns}
-# 잠정값. 반복 한도를 늘려 가며 수렴을 확인하는 실험이 끝나면 확정한다.
-DEFAULT_ITERATIONS = {"sa": 2_000_000, "alns": 20_000}
+# 본 실험의 한도. 한도를 두 배로 늘릴 때마다 평균 비용이 아직 0.1~1.5% 줄어들어 완전히 수렴한 값은 아니다
+# (RESULTS_MULTI.md 의 반복 한도 비교).
+DEFAULT_ITERATIONS = {"sa": 8_000_000, "alns": 80_000}
 _problem = None
 
 
