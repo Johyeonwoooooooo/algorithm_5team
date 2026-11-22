@@ -39,7 +39,7 @@
       "vehicles_reset_to_recorded_order": []
     }
   },
-  "solver_sha256": "588fb3596f6302ffcf1b5e9f52ba235e48f4bb8c3ef33b3abebeb4d28db69b80",
-  "python": "3.11.7 | packaged by Anaconda, Inc. | (main, Dec 15 2023, 18:05:47) [MSC v.1916 64 bit (AMD64)]",
-  "platform": "Windows-10-10.0.26200-SP0"
+  "solver_sha256": "b0ccb649ca0c531a91fc6c6c2693e0cda4d6608921d6995c1ecf473d7ad70c80",
+  "python": "3.11.4 (tags/v3.11.4:d2340ef, Jun  7 2023, 05:45:37) [MSC v.1934 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26300-SP0"
 }
