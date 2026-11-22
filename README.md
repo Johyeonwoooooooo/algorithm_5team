@@ -1,3 +1,80 @@
+> **다차량 실험 결과는 진행 중.** 끝나면 `results/multi/`에 올라온다. 지금은 코드와 데이터만 있다.
+
+# 배송 실험: 차량 배정과 방문 순서
+
+이 저장소에는 실험이 두 개 있다.
+
+| 실험 | 다루는 것 | 데이터 | 코드 | 결과 |
+|---|---|---|---|---|
+| 다차량 (새 실험) | 어느 차에 어느 배송지를 실을지 + 방문 순서 | `data/station_day/` (DLA7 2018-08-03, 차량 6대, 배송지 923곳) | `solvers_multi.py`, `run_multi.py`, `check_multi.py`, `summarize.py` | 진행 중 |
+| v1 (기존) | 한 차량의 방문 순서만 | `data/routes.json` (경로 24개) | `solvers.py`, `run.py`, `check.py` | `results/v1_순서만/` |
+
+새 데이터 설명은 [DATASET_CHANGES.md](DATASET_CHANGES.md)에 있다.
+
+## 새 실험: 지금 할 수 있는 것
+
+Python 3.10 이상이면 된다. 추가 패키지는 필요 없다.
+
+**1. 받기**
+
+```shell
+git clone https://github.com/Johyeonwoooooooo/algorithm_5team.git
+cd algorithm_5team
+```
+
+이미 받았다면 `git pull`만 한다.
+
+**2. 검증**
+
+```shell
+python check_multi.py
+```
+
+손계산 예제(차 2대, 배송지 5곳)와 같은 시드 재실행 검사가 통과해야 한다. 1분 안에 끝난다.
+
+**3. 자기 알고리즘 실행해 보기**
+
+```shell
+python run_multi.py --algo sa --sa-iterations 200000 --output try_multi        # SA 담당
+python run_multi.py --algo alns --alns-iterations 2000 --output try_multi      # ALNS 담당
+python run_multi.py --algo greedy --output try_multi                           # 탐욕법 담당
+python check_multi.py --results try_multi
+python summarize.py --root try_multi
+```
+
+- 위 명령은 동작 확인용으로 반복 횟수를 작게 잡은 것이다. 본 실험의 반복 횟수는 수렴 실험이 끝난 뒤 확정한다. `run_multi.py`에 들어 있는 기본값(SA 200만, ALNS 2만)은 잠정값이다.
+- 결과는 `--output` 폴더 아래 `baseline/`, `sa/`처럼 알고리즘 이름의 폴더에 저장된다. `try_multi`는 연습용이므로 커밋하지 않는다.
+- `check_multi.py --results`는 모든 해를 별도 코드로 다시 계산해 배송지 누락·중복, 용량, 근무시간 상한, 비용을 대조한다.
+- `summarize.py`는 그 폴더에 `SUMMARY.md`를 만든다. 아직 안 돌린 알고리즘은 "결과 없음"으로 나온다. matplotlib이 설치돼 있으면 수렴 그래프도 만든다.
+- 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. `--jobs`는 동시에 쓰는 프로세스 수이고 결과에는 영향이 없다.
+
+## 새 실험의 규칙
+
+- **비교 대상.** A는 기록된 배정과 기록된 순서, B는 기록된 배정에 알고리즘 순서(배정 고정), C는 알고리즘이 배정과 순서를 모두 정한 것이다. C2는 C와 같지만 SA·ALNS가 기록된 배정에서 출발한다. B와 C·C2의 차이가 배정을 바꿔서 얻는 효과다.
+- **비용** = 이동시간 + 대기 가중치 × 대기시간 + 지각 초당 벌점 × 지각시간 + 지각 건당 벌점 × 지각 배송지 수.
+
+  | 인자 | 기본값 | 뜻 |
+  |---|---:|---|
+  | `--wait-weight` | 1 | 시간대가 열리기 전에 도착해 기다린 1초당 비용 |
+  | `--late-second-cost` | 5 | 물품 처리 완료가 마감보다 늦은 1초당 비용. 물품마다 따로 센다 |
+  | `--late-stop-cost` | 600 | 지각한 배송지 1곳당 비용. 한 곳에서 물품 여러 개가 늦어도 한 번만 센다 |
+
+  모두 "이동시간 1초 = 1"로 둔 환산값이고, 근거가 있는 값이 아니라 실험 가정이다.
+- **제약.** 모든 배송지는 정확히 한 차에 실리고, 차량 용량을 넘을 수 없다. 차량별 소요시간(출발부터 마지막 배송 완료까지)은 근무시간 상한을 넘을 수 없다. 상한의 기본값은 기록된 6개 경로 중 가장 긴 소요시간(8.23시간)이고 `--max-duration-seconds`로 바꾼다.
+- **시계.** 차량마다 자기 출발 오프셋에서 시작하고, 거점에서 출발해 마지막 배송지에서 끝난다. 시간대·대기·물품 처리 순서는 v1과 같다.
+- **이동시간.** `dataset.py`의 `travel()`로만 조회한다. 원래 같은 경로였던 쌍은 원자료 값, 다른 경로의 배송지 쌍은 추정값이다.
+
+| 결과 파일 | 내용 |
+|---|---|
+| `runs.csv` | 실행별 비용, 이동, 대기, 지각, 완료 시각, 옮겨진 배송지 수, 추정 구간 사용량, 전부 추정 재채점 |
+| `vehicles.csv` | 실행별·차량별 배송지 수, 적재율, 이동, 대기, 지각, 소요시간, 완료 시각 |
+| `moves.csv` | 원래 차량 → 새 차량별 옮겨진 배송지 수 |
+| `history.csv` | 반복에 따른 최선 비용과 현재 비용 (SA·ALNS) |
+| `solutions.jsonl` | 실행별 차량의 배송지 ID 순서 |
+| `settings.json` | 가중치, 근무시간 상한, 반복 횟수, 시드, 데이터·솔버 해시, 탐욕법 처리 기록 |
+
+---
+
 # 기존 실험 (v1): 한 차량의 방문 순서 비교
 
 아래는 처음 만든 실험이다. 경로 24개를 따로따로 풀고, 결과는 `results/v1_순서만/`에 있다. 코드(`run.py`, `solvers.py`, `check.py`)와 데이터(`data/routes.json`)는 그대로 쓸 수 있다.
