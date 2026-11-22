@@ -1,19 +1,17 @@
-> **다차량 실험 결과는 진행 중.** 끝나면 `results/multi/`에 올라온다. 지금은 코드와 데이터만 있다.
-
 # 배송 실험: 차량 배정과 방문 순서
 
 이 저장소에는 실험이 두 개 있다.
 
 | 실험 | 다루는 것 | 데이터 | 코드 | 결과 |
 |---|---|---|---|---|
-| 다차량 (새 실험) | 어느 차에 어느 배송지를 실을지 + 방문 순서 | `data/station_day/` (DLA7 2018-08-03, 차량 6대, 배송지 923곳) | `solvers_multi.py`, `run_multi.py`, `check_multi.py`, `summarize.py` | 진행 중 |
+| 다차량 (새 실험) | 어느 차에 어느 배송지를 실을지 + 방문 순서 | `data/station_day/` (DLA7 2018-08-03, 차량 6대, 배송지 923곳) | `solvers_multi.py`, `run_multi.py`, `check_multi.py`, `summarize.py` | `results/multi/` |
 | v1 (기존) | 한 차량의 방문 순서만 | `data/routes.json` (경로 24개) | `solvers.py`, `run.py`, `check.py` | `results/v1_순서만/` |
 
-새 데이터 설명은 [DATASET_CHANGES.md](DATASET_CHANGES.md)에 있다.
+새 실험의 결과와 해석은 [RESULTS_MULTI.md](RESULTS_MULTI.md), 자동 생성 요약은 [results/multi/SUMMARY.md](results/multi/SUMMARY.md), 데이터 설명은 [DATASET_CHANGES.md](DATASET_CHANGES.md)에 있다.
 
-## 새 실험: 지금 할 수 있는 것
+## 새 실험 실행 방법
 
-Python 3.10 이상이면 된다. 추가 패키지는 필요 없다.
+Python 3.10 이상이면 된다. 추가 패키지는 필요 없다. 팀원은 각자 맡은 알고리즘 하나만 돌린다.
 
 **1. 받기**
 
@@ -32,21 +30,44 @@ python check_multi.py
 
 손계산 예제(차 2대, 배송지 5곳)와 같은 시드 재실행 검사가 통과해야 한다. 1분 안에 끝난다.
 
-**3. 자기 알고리즘 실행해 보기**
+**3. 자기 알고리즘 실행**
 
 ```shell
-python run_multi.py --algo sa --sa-iterations 200000 --output try_multi        # SA 담당
-python run_multi.py --algo alns --alns-iterations 2000 --output try_multi      # ALNS 담당
-python run_multi.py --algo greedy --output try_multi                           # 탐욕법 담당
-python check_multi.py --results try_multi
-python summarize.py --root try_multi
+python run_multi.py --algo sa        # SA 담당
+python run_multi.py --algo alns      # ALNS 담당
+python run_multi.py --algo greedy    # 탐욕법 담당
 ```
 
-- 위 명령은 동작 확인용으로 반복 횟수를 작게 잡은 것이다. 본 실험의 반복 횟수는 수렴 실험이 끝난 뒤 확정한다. `run_multi.py`에 들어 있는 기본값(SA 200만, ALNS 2만)은 잠정값이다.
-- 결과는 `--output` 폴더 아래 `baseline/`, `sa/`처럼 알고리즘 이름의 폴더에 저장된다. `try_multi`는 연습용이므로 커밋하지 않는다.
-- `check_multi.py --results`는 모든 해를 별도 코드로 다시 계산해 배송지 누락·중복, 용량, 근무시간 상한, 비용을 대조한다.
-- `summarize.py`는 그 폴더에 `SUMMARY.md`를 만든다. 아직 안 돌린 알고리즘은 "결과 없음"으로 나온다. matplotlib이 설치돼 있으면 수렴 그래프도 만든다.
-- 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. `--jobs`는 동시에 쓰는 프로세스 수이고 결과에는 영향이 없다.
+- 결과는 `results/multi/sa/`처럼 알고리즘 이름의 폴더에 저장된다.
+- 기본 설정은 SA 8,000,000회, ALNS 80,000회, 시드 11·29·47·61·83이다. 12코어 PC에서 실행 하나에 SA 5~7분, ALNS 8~17분이 걸렸고, 세 알고리즘을 함께 돌리면 29분이 걸렸다. 동작만 보려면 `--sa-iterations 200000 --output try_multi`처럼 작게 돌린다.
+- 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. 저장소에 이미 들어 있는 결과와 `git diff`로 비교했을 때 실행시간(`runtime_seconds`)과 `settings.json`의 PC 정보만 달라야 한다. 다른 값이 달라지면 팀에 알린다.
+- `--jobs`는 동시에 쓰는 프로세스 수이고 결과에는 영향이 없다.
+
+**4. 결과 검산**
+
+```shell
+python check_multi.py --results results/multi
+```
+
+모든 해를 별도 코드로 다시 계산해 배송지 누락·중복, 용량, 근무시간 상한, 비용을 대조한다.
+
+**5. 요약 생성**
+
+```shell
+python summarize.py
+```
+
+`results/multi/SUMMARY.md`를 다시 만든다. 아직 안 돌린 알고리즘은 "결과 없음"으로 나온다. matplotlib이 설치돼 있으면 수렴 그래프(`convergence.png`)도 만든다.
+
+**6. 자기 결과 폴더만 커밋**
+
+```shell
+git add results/multi/sa
+git commit -m "SA 결과"
+git push
+```
+
+`SUMMARY.md`는 자동 생성물이라 여러 명이 같이 올리면 충돌한다. 자기 알고리즘 폴더만 올리고, 요약은 팀장이 모아서 다시 만든다.
 
 ## 새 실험의 규칙
 
@@ -59,12 +80,12 @@ python summarize.py --root try_multi
   | `--late-second-cost` | 5 | 물품 처리 완료가 마감보다 늦은 1초당 비용. 물품마다 따로 센다 |
   | `--late-stop-cost` | 600 | 지각한 배송지 1곳당 비용. 한 곳에서 물품 여러 개가 늦어도 한 번만 센다 |
 
-  모두 "이동시간 1초 = 1"로 둔 환산값이고, 근거가 있는 값이 아니라 실험 가정이다.
+  모두 "이동시간 1초 = 1"로 둔 환산값이고, 근거가 있는 값이 아니라 실험 가정이다. 그래서 값을 바꾼 민감도 결과를 같이 보고한다.
 - **제약.** 모든 배송지는 정확히 한 차에 실리고, 차량 용량을 넘을 수 없다. 차량별 소요시간(출발부터 마지막 배송 완료까지)은 근무시간 상한을 넘을 수 없다. 상한의 기본값은 기록된 6개 경로 중 가장 긴 소요시간(8.23시간)이고 `--max-duration-seconds`로 바꾼다.
 - **시계.** 차량마다 자기 출발 오프셋에서 시작하고, 거점에서 출발해 마지막 배송지에서 끝난다. 시간대·대기·물품 처리 순서는 v1과 같다.
 - **이동시간.** `dataset.py`의 `travel()`로만 조회한다. 원래 같은 경로였던 쌍은 원자료 값, 다른 경로의 배송지 쌍은 추정값이다.
 
-| 결과 파일 | 내용 |
+| 파일 (`results/multi/알고리즘/`) | 내용 |
 |---|---|
 | `runs.csv` | 실행별 비용, 이동, 대기, 지각, 완료 시각, 옮겨진 배송지 수, 추정 구간 사용량, 전부 추정 재채점 |
 | `vehicles.csv` | 실행별·차량별 배송지 수, 적재율, 이동, 대기, 지각, 소요시간, 완료 시각 |
@@ -72,6 +93,8 @@ python summarize.py --root try_multi
 | `history.csv` | 반복에 따른 최선 비용과 현재 비용 (SA·ALNS) |
 | `solutions.jsonl` | 실행별 차량의 배송지 ID 순서 |
 | `settings.json` | 가중치, 근무시간 상한, 반복 횟수, 시드, 데이터·솔버 해시, 탐욕법 처리 기록 |
+
+`results/multi/limits/`는 반복 한도를 바꿔 본 결과, `results/multi/sensitivity/`는 가중치를 바꿔 본 결과다.
 
 ---
 
