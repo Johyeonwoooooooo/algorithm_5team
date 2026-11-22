@@ -1,0 +1,16 @@
+﻿scenario,method,seed,iterations,from_vehicle,to_vehicle,stops,boundary_stops
+C,greedy,,,V1,V4,79,24
+C,greedy,,,V1,V5,56,25
+C,greedy,,,V2,V1,10,9
+C,greedy,,,V2,V3,150,106
+C,greedy,,,V3,V1,19,10
+C,greedy,,,V3,V2,2,1
+C,greedy,,,V3,V6,116,54
+C,greedy,,,V4,V1,36,19
+C,greedy,,,V4,V5,106,59
+C,greedy,,,V4,V6,18,9
+C,greedy,,,V5,V1,14,9
+C,greedy,,,V5,V2,148,86
+C,greedy,,,V6,V1,4,1
+C,greedy,,,V6,V3,61,25
+C,greedy,,,V6,V4,83,34

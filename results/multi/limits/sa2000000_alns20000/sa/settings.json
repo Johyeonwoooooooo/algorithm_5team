@@ -1,0 +1,58 @@
+{
+  "weights": {
+    "wait_weight": 1.0,
+    "late_second_cost": 5.0,
+    "late_stop_cost": 600.0
+  },
+  "max_duration_seconds": 29639.2,
+  "max_duration_source": "longest recorded route",
+  "vehicles": {
+    "V1": "RouteID_7b27eef5-f742-49ac-a80e-e7dc75bf6b1e",
+    "V2": "RouteID_5be5334c-9e09-4a6f-9658-f4821cd4ef88",
+    "V3": "RouteID_f3e23ae0-1761-4e50-b44b-c88eed709402",
+    "V4": "RouteID_a3f3caaa-7f27-4dc0-8f22-013269b2dff0",
+    "V5": "RouteID_599f5d4b-9066-41e8-82b5-f3791d13205c",
+    "V6": "RouteID_781d1f76-a44d-4b20-af9d-f249a9b2906c"
+  },
+  "boundary_stops": 483,
+  "data_sha256": {
+    "station_day.json": "b7fb8bdce120b2b800074b84dc42ba52e368b6911a79f84ab8278e67aa0a2c0a",
+    "travel.json": "f421e8621a883e666a551c1f0192facc29985e1ded978757997ae355fe33865d",
+    "manifest.json": "2d1044b83440722bdf5b062b84ec46352b0f56fff9e803240a0e6ca1189272dc"
+  },
+  "algo": "sa",
+  "greedy_report": {
+    "B": {
+      "stops_without_position_within_limit": 5,
+      "vehicles_over_limit_after_insertion": [
+        "RouteID_599f5d4b-9066-41e8-82b5-f3791d13205c"
+      ],
+      "relocations_within_vehicle": 19,
+      "stops_sent_to_other_vehicle": 0,
+      "vehicles_reset_to_recorded_order": []
+    },
+    "C": {
+      "stops_without_position_within_limit": 0,
+      "vehicles_over_limit_after_insertion": [],
+      "relocations_within_vehicle": 0,
+      "stops_sent_to_other_vehicle": 0,
+      "vehicles_reset_to_recorded_order": []
+    }
+  },
+  "solver_sha256": "588fb3596f6302ffcf1b5e9f52ba235e48f4bb8c3ef33b3abebeb4d28db69b80",
+  "python": "3.11.7 | packaged by Anaconda, Inc. | (main, Dec 15 2023, 18:05:47) [MSC v.1916 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "iterations": 2000000,
+  "seeds": [
+    11,
+    29,
+    47,
+    61,
+    83
+  ],
+  "neighbours": 12,
+  "alns_positions": [
+    10,
+    2
+  ]
+}
