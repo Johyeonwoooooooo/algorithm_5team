@@ -1,13 +1,13 @@
 # 데이터셋 추가: DLA7 2018-08-03 배정 실험용
 
-기존 `data/`(경로 24개, 방문 순서 실험용)는 그대로 두고, 차량 배정 실험용 데이터를 `data/station_day/`에 새로 추가했다. `data_fetch.py`, `solvers.py`, `run.py`, `check.py`는 바꾸지 않았다.
+이전 실험의 데이터(경로 24개, 방문 순서 실험용, 지금은 `v1/data/`)는 그대로 두고, 차량 배정 실험용 데이터를 `data/station_day/`에 새로 추가했다. 이전 실험의 코드(`v1/` 아래 `data_fetch.py`, `solvers.py`, `run.py`, `check.py`)의 동작은 바꾸지 않았다. 아래의 경로와 명령은 저장소 폴더 기준이다.
 
 | 파일 | 내용 |
 |---|---|
 | `data/station_day/station_day.json` | 거점, 기준 시각, 차량 6대, 배송지 923곳, 원래 배정과 기록된 방문 순서 |
 | `data/station_day/travel.json` | 경로별 원자료 이동시간 행렬(새 ID 기준) |
 | `data/station_day/manifest.json` | 출처, 선택 규칙, 추정식 계수와 오차, 파일 해시 |
-| `data_fetch_station.py` | 원자료에서 위 세 파일을 만드는 스크립트 |
+| `data_fetch_station.py` | 원자료에서 위 세 파일을 만드는 스크립트. `v1/data_fetch.py`의 함수 두 개를 가져다 쓴다 |
 | `dataset.py` | 데이터를 읽고 이동시간을 조회하는 모듈 |
 
 ## 왜 바꿨는지
@@ -24,7 +24,7 @@
 
 고른 경로 ID는 `manifest.json`의 `selection.route_ids`에 있다.
 
-## 기존 data/ 와 다른 점
+## 이전 실험 데이터(v1/data/)와 다른 점
 
 **추가된 필드**
 

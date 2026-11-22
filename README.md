@@ -1,17 +1,17 @@
 # 배송 실험: 차량 배정과 방문 순서
 
-이 저장소에는 실험이 두 개 있다.
+Amazon 2021 Last Mile Routing Challenge의 공개 자료로, 어느 차에 어느 배송지를 실을지와 방문 순서를 함께 푼다. 대상은 DLA7 스테이션 2018-08-03의 인접 경로 6대, 배송지 923곳이다. 탐욕법, SA, ALNS 세 알고리즘을 비교한다.
 
-| 실험 | 다루는 것 | 데이터 | 코드 | 결과 |
-|---|---|---|---|---|
-| 다차량 (새 실험) | 어느 차에 어느 배송지를 실을지 + 방문 순서 | `data/station_day/` (DLA7 2018-08-03, 차량 6대, 배송지 923곳) | `solvers_multi.py`, `run_multi.py`, `check_multi.py`, `summarize.py` | `results/multi/` |
-| v1 (기존) | 한 차량의 방문 순서만 | `data/routes.json` (경로 24개) | `solvers.py`, `run.py`, `check.py` | `results/v1_순서만/` |
+- 결과와 해석: [docs/RESULTS_MULTI.md](docs/RESULTS_MULTI.md)
+- 한눈에 보는 표: [results/SUMMARY.md](results/SUMMARY.md)
+- 결과 파일과 열 이름: [results/README.md](results/README.md)
+- 데이터 설명: [docs/DATASET_CHANGES.md](docs/DATASET_CHANGES.md)
+- 담당 결과 양식: [docs/담당결과_양식.md](docs/담당결과_양식.md)
+- 이전 실험(한 차량의 방문 순서만): [v1/README.md](v1/README.md)
 
-새 실험의 결과와 해석은 [RESULTS_MULTI.md](RESULTS_MULTI.md), 자동 생성 요약은 [results/multi/SUMMARY.md](results/multi/SUMMARY.md), 데이터 설명은 [DATASET_CHANGES.md](DATASET_CHANGES.md)에 있다.
+## 실행 방법
 
-## 새 실험 실행 방법
-
-Python 3.10 이상이면 된다. 추가 패키지는 필요 없다. 팀원은 각자 맡은 알고리즘 하나만 돌린다.
+Python 3.10 이상이면 된다. 추가 패키지는 필요 없다. 팀원은 각자 맡은 알고리즘 하나만 돌린다. 명령은 모두 이 폴더(저장소 맨 위)에서 실행한다.
 
 **1. 받기**
 
@@ -38,15 +38,16 @@ python run_multi.py --algo alns      # ALNS 담당
 python run_multi.py --algo greedy    # 탐욕법 담당
 ```
 
-- 결과는 `results/multi/sa/`처럼 알고리즘 이름의 폴더에 저장된다.
-- 기본 설정은 SA 8,000,000회, ALNS 80,000회, 시드 11·29·47·61·83이다. 12코어 PC에서 실행 하나에 SA 5~7분, ALNS 8~17분이 걸렸고, 세 알고리즘을 함께 돌리면 29분이 걸렸다. 동작만 보려면 `--sa-iterations 200000 --output try_multi`처럼 작게 돌린다.
+- 결과는 `results/sa/`처럼 알고리즘 이름의 폴더에 저장된다.
+- 기본 설정은 SA 8,000,000회, ALNS 80,000회, 시드 11·29·47·61·83이다. 12코어 PC에서 실행 하나에 SA 5~7분, ALNS 8~17분이 걸렸고, 세 알고리즘을 함께 돌리면 29분이 걸렸다.
+- 동작만 먼저 보려면 `python run_multi.py --algo sa --sa-iterations 200000 --output try_multi`처럼 작게 돌린다. `try_multi`는 커밋되지 않는다.
 - 탐색 한도는 시간이 아니라 반복 횟수다. 같은 시드와 같은 반복 횟수면 같은 결과가 나오게 만들었다. 저장소에 이미 들어 있는 결과와 `git diff`로 비교했을 때 실행시간(`runtime_seconds`)과 `settings.json`의 PC 정보만 달라야 한다. 다른 값이 달라지면 팀에 알린다.
 - `--jobs`는 동시에 쓰는 프로세스 수이고 결과에는 영향이 없다.
 
 **4. 결과 검산**
 
 ```shell
-python check_multi.py --results results/multi
+python check_multi.py --results results
 ```
 
 모든 해를 별도 코드로 다시 계산해 배송지 누락·중복, 용량, 근무시간 상한, 비용을 대조한다.
@@ -57,19 +58,40 @@ python check_multi.py --results results/multi
 python summarize.py
 ```
 
-`results/multi/SUMMARY.md`를 다시 만든다. 아직 안 돌린 알고리즘은 "결과 없음"으로 나온다. matplotlib이 설치돼 있으면 수렴 그래프(`convergence.png`)도 만든다.
+`results/SUMMARY.md`를 다시 만든다. 아직 안 돌린 알고리즘은 "결과 없음"으로 나온다. matplotlib이 설치돼 있으면 수렴 그래프(`results/convergence.png`)도 만든다.
 
 **6. 자기 결과 폴더만 커밋**
 
 ```shell
-git add results/multi/sa
+git add results/sa
 git commit -m "SA 결과"
 git push
 ```
 
 `SUMMARY.md`는 자동 생성물이라 여러 명이 같이 올리면 충돌한다. 자기 알고리즘 폴더만 올리고, 요약은 팀장이 모아서 다시 만든다.
 
-## 새 실험의 규칙
+## 폴더 구조
+
+```
+README.md                 시작점
+docs/                     설명 문서 (결과 해석, 데이터 설명, 담당 결과 양식)
+data/station_day/         실험 데이터 (차량 6대, 배송지 923곳, 경로별 이동시간)
+solvers_multi.py          세 알고리즘과 채점기
+run_multi.py              실험 실행
+check_multi.py            검증
+summarize.py              결과 요약 생성
+dataset.py                데이터 읽기와 이동시간 조회
+data_fetch_station.py     원자료에서 데이터를 다시 만드는 스크립트
+results/                  결과
+  SUMMARY.md                전체 요약
+  baseline/                 A (기록 그대로)
+  greedy/ sa/ alns/         본 실험
+  extra/limits/             반복 한도 비교
+  extra/sensitivity/        민감도
+v1/                       이전 실험 (한 차량의 방문 순서만). 코드, 데이터, 결과가 모두 들어 있다
+```
+
+## 실험 규칙
 
 - **비교 대상.** A는 기록된 배정과 기록된 순서, B는 기록된 배정에 알고리즘 순서(배정 고정), C는 알고리즘이 배정과 순서를 모두 정한 것이다. C2는 C와 같지만 SA·ALNS가 기록된 배정에서 출발한다. B와 C·C2의 차이가 배정을 바꿔서 얻는 효과다.
 - **비용** = 이동시간 + 대기 가중치 × 대기시간 + 지각 초당 벌점 × 지각시간 + 지각 건당 벌점 × 지각 배송지 수.
@@ -82,99 +104,11 @@ git push
 
   모두 "이동시간 1초 = 1"로 둔 환산값이고, 근거가 있는 값이 아니라 실험 가정이다. 그래서 값을 바꾼 민감도 결과를 같이 보고한다.
 - **제약.** 모든 배송지는 정확히 한 차에 실리고, 차량 용량을 넘을 수 없다. 차량별 소요시간(출발부터 마지막 배송 완료까지)은 근무시간 상한을 넘을 수 없다. 상한의 기본값은 기록된 6개 경로 중 가장 긴 소요시간(8.23시간)이고 `--max-duration-seconds`로 바꾼다.
-- **시계.** 차량마다 자기 출발 오프셋에서 시작하고, 거점에서 출발해 마지막 배송지에서 끝난다. 시간대·대기·물품 처리 순서는 v1과 같다.
+- **시계.** 차량마다 자기 출발 오프셋에서 시작하고, 거점에서 출발해 마지막 배송지에서 끝난다. 시간대·대기·물품 처리 순서는 이전 실험과 같다.
 - **이동시간.** `dataset.py`의 `travel()`로만 조회한다. 원래 같은 경로였던 쌍은 원자료 값, 다른 경로의 배송지 쌍은 추정값이다.
 
-| 파일 (`results/multi/알고리즘/`) | 내용 |
-|---|---|
-| `runs.csv` | 실행별 비용, 이동, 대기, 지각, 완료 시각, 옮겨진 배송지 수, 추정 구간 사용량, 전부 추정 재채점 |
-| `vehicles.csv` | 실행별·차량별 배송지 수, 적재율, 이동, 대기, 지각, 소요시간, 완료 시각 |
-| `moves.csv` | 원래 차량 → 새 차량별 옮겨진 배송지 수 |
-| `history.csv` | 반복에 따른 최선 비용과 현재 비용 (SA·ALNS) |
-| `solutions.jsonl` | 실행별 차량의 배송지 ID 순서 |
-| `settings.json` | 가중치, 근무시간 상한, 반복 횟수, 시드, 데이터·솔버 해시, 탐욕법 처리 기록 |
+## 데이터와 라이선스
 
-`results/multi/limits/`는 반복 한도를 바꿔 본 결과, `results/multi/sensitivity/`는 가중치를 바꿔 본 결과다.
+데이터 저작권은 Amazon.com, Inc. 또는 그 계열사에 있다. 2018년 미국 5개 도시의 배송 경로를 담은 공개 자료에서 실험용 입력을 가공했다. 자료와 가공본의 이용 조건은 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)이고 전문은 `data/Amazon_License.txt`에 있다. 원자료는 용량이 커서 저장소에 없다. 받는 방법은 [docs/DATASET_CHANGES.md](docs/DATASET_CHANGES.md)에 있다.
 
----
-
-# 기존 실험 (v1): 한 차량의 방문 순서 비교
-
-아래는 처음 만든 실험이다. 경로 24개를 따로따로 풀고, 결과는 `results/v1_순서만/`에 있다. 코드(`run.py`, `solvers.py`, `check.py`)와 데이터(`data/routes.json`)는 그대로 쓸 수 있다.
-
-한 차량에 이미 배정된 배송지를 한 번씩 방문하는 순서를 비교한다. 같은 공개 배송 경로를 탐욕적 삽입법, 시뮬레이티드 어닐링(SA), 적응형 대규모 이웃 탐색(ALNS)에 입력한다. 기사 방문 순서도 같은 평가기로 계산해 현장 기록과의 차이를 살펴본다.
-
-## 예비실험 결과
-
-공식 학습 자료에 기록된 첫 24개 경로를 대상으로, SA와 ALNS에 경로당 1초씩 같은 탐색 시간을 주고 시드 11·29·47로 반복했다. 아래 수치는 시드별 결과를 경로 안에서 먼저 평균낸 뒤 24개 경로를 동일 비중으로 평균낸 값이다.
-
-| 방법 | 경로당 이동시간(분) | 경로당 지연 배송지(곳) | 경로당 물품 지연시간 합(분) | 계산시간(초) |
-|---|---:|---:|---:|---:|
-| 탐욕적 삽입법 | 166.2 | 0 | 0 | 0.152 |
-| SA | 158.4 | 0 | 0 | 1.154 |
-| ALNS | 152.5 | 0 | 0 | 1.152 |
-| 기록된 방문 순서를 같은 모형으로 평가 | 164.8 | 0.083 | 4.78 | — |
-
-탐욕법과 비교한 평균 이동시간 감소율은 SA 4.71%, ALNS 8.22%였다. 각 경로에서 세 번 실행한 평균을 비교했을 때 24개 모두 ALNS의 비용이 SA보다 작았다. 세 방법이 만든 최종 순서는 모두 시간 조건을 충족했다. 24개 경로 중 1개의 기록된 방문 순서에서만 모형상 지연이 발생했다. 이 표본에서는 알고리즘 사이의 지연 대응력 차이를 판단하기 어렵다.
-
-예를 들어 파일의 첫 경로(배송지 118곳)에서는 모형상 이동시간이 탐욕법 140.6분, SA 121.5분, ALNS 115.2분이었다. 이 경로의 실제 방문 순서를 같은 방식으로 평가하면 129.2분이다. 결과 192행(기록된 순서 24건 포함)에 대해 저장된 순서로 이동·대기·서비스·지연·비용을 독립 계산하고 누락·중복 방문을 검사했다.
-
-## 실행
-
-팀원별 실행에서는 ZIP을 풀고 이 파일과 같은 폴더에서 다음 중 자신의 명령 두 줄을 실행한다. 모든 담당 결과에 기사의 기록된 순서와 탐욕법 기준 결과가 들어간다. SA와 ALNS는 같은 초기 경로, 시드, 탐색 예산을 사용한다. 결과 폴더는 명령의 `--output`에서 지정한다. `--output`을 생략하면 `results/v1_순서만`(전체 비교) 또는 `results/v1_순서만_METHOD`에 저장된다.
-
-```shell
-python run.py --method greedy --output results_greedy
-python check.py --method greedy --results results_greedy
-
-python run.py --method sa --seconds 1 --seeds 11 29 47 --output results_sa
-python check.py --method sa --results results_sa
-
-python run.py --method alns --seconds 1 --seeds 11 29 47 --output results_alns
-python check.py --method alns --results results_alns
-```
-
-24개 경로 기준 탐욕법 담당 결과는 48행이고, SA와 ALNS 담당 결과는 각각 120행이다. 팀장은 세 방법을 같은 컴퓨터에서 모두 실행해 최종 비교표를 만든다. `--method all`이 전체 비교이며, 옵션을 생략해도 전체 비교를 실행한다.
-
-Python 3.10 이상에서 이 폴더를 열고 다음 명령을 실행한다. 포함된 표본으로 실험할 때는 다운로드를 다시 할 필요가 없다. 같은 시드라도 시간 한도로 탐색을 종료하므로 컴퓨터와 실행 시점에 따라 반복 횟수와 결과가 달라질 수 있다.
-
-```shell
-python run.py --limit 1 --seconds 0.5 --seeds 11 --output quick_run
-python run.py --seconds 1 --seeds 11 29 47 --output results_repeat
-python check.py --results results_repeat
-```
-
-원자료에서 같은 표본을 다시 받으려면 `python data_fetch.py --count 24 --output data_repeat`를 실행한다. 공식 학습 파일의 첫 24개 경로를 원래 크기 그대로 사용했다. 표본은 배송지 3,389곳(경로당 58~189곳), 물품 5,604개로 구성된다. 마감이 명시된 물품은 467개이며 214개 배송지에 분포한다. 자료 출처와 가공 내역은 [데이터 기록](data/manifest.json)에 있다.
-
-## 입력과 평가 규칙
-
-- 출발 시각을 0초로 놓는다. 물류 거점에서 첫 배송지로 출발해 마지막 배송지에서 끝낸다. 배송지 사이에는 원자료가 제공하는 방향별 이동시간을 사용한다.
-- 각 배송지에서 마감이 빠른 물품부터 처리한다. 배송 가능 시각보다 이르면 기다리고, 물품별 계획 서비스 시간을 더한다. 마감이 지정된 물품에 대해 완료 시각이 마감보다 늦은 만큼 지연을 누적한다. 한 곳에서 물품 여러 개가 늦어도 지연 배송지는 한 곳으로 센다.
-- 알고리즘이 최소화하는 비용은 **이동시간(초) + 5 × 물품별 지연시간 합(초) + 600 × 지연 배송지 수**이다. 예를 들어 한 배송지의 물품 하나가 1분 늦으면 시간 관련 벌점이 900점이다. 이 가중치는 팀에서 변경할 수 있는 예비실험 가정이다. 결과표에서 이동시간과 지연도 따로 보고한다.
-- 탐욕적 삽입법은 배송지별 가장 빠른 마감과 배송지 ID 순으로 삽입 대상을 정한다. SA와 ALNS는 동일한 탐욕 경로에서 시작한다. 실제 방문 순서는 알고리즘을 실행한 뒤 비교할 때만 사용한다.
-- SA는 두 배송지의 교환 또는 한 배송지의 이동을 시도한다. 초기 온도를 배송지당 비용의 ¼(최소 1)로 설정하고, 제한 시간 동안 초기 온도의 1%까지 낮춘다. ALNS는 무작위·우회비용·이동시간상 가까운 배송지 기준으로 방문지를 제거한다. 마감 순서 또는 최선의 삽입 위치를 놓칠 때 손해가 큰 순서로 재삽입하며, 성과에 따라 방법별 선택 확률을 조정한다.
-
-## 결과 읽기
-
-| 파일 | 내용 |
-|---|---|
-| `results/v1_순서만/runs.csv` | 경로·방법·시드별 점수, 지연, 이동시간, 실행시간, 반복 횟수 |
-| `results/v1_순서만/orders.jsonl` | 위의 각 실행에서 얻은 실제 배송지 ID 순서 |
-| `results/v1_순서만/by_route.csv` | 각 경로에서 시드별 결과를 평균낸 값과 점수 표준편차 |
-| `results/v1_순서만/summary.csv` | 각 경로에 같은 비중을 준 방법별 평균 |
-| `results/v1_순서만/settings.json` | 원자료 가공본 및 알고리즘 파일 해시, 실행 환경, 시드와 경로 ID |
-
-시간 열은 초 단위다. 실행시간은 탐욕 초기화와 해당 탐색에 걸린 시간을 더한 값이다. 데이터 로딩과 결과 파일 기록은 제외한다. 실제 방문 순서의 계산시간은 비어 있다. 기록된 실제 방문 순서에 같은 이동시간·서비스시간 모델을 적용한 결과이므로, 그 경로의 점수를 기사의 실측 운행시간이나 실측 지각으로 해석할 수 없다.
-
-## 4인 역할 분담안
-
-| 담당 | 직접 검토할 질문 | 맡을 결과물 |
-|---|---|---|
-| 조찬웅 · 발표와 결과 해석 | 같은 경로에서 이동시간과 지연이 어떻게 달라졌는가? | 평가 기준 한 장, 경로 예시 한 건, 결과표와 발표 |
-| 팀원 1 · 데이터와 탐욕법 | 누락된 마감을 어떻게 처리하며 삽입 위치에 따라 비용은 얼마나 달라지는가? | 전처리·표본 설명, 탐욕법 코드와 손계산 예제 |
-| 팀원 2 · SA와 반복 실험 | 온도와 탐색 시간이 달라지면 결과가 얼마나 흔들리는가? | SA 구현 검토, 같은 경로의 여러 시드 실험과 편차 |
-| 팀원 3 · ALNS | 어떤 배송지를 빼고 다시 넣으며, 적응적 선택은 어떻게 바뀌는가? | ALNS 구현 검토, 배송지 제거·재삽입 전후 사례 |
-
-각 알고리즘 담당자가 본인 결과표와 해석 문단을 작성하고, 발표자는 동일 지표로 합쳐 전체 결론을 설명한다.
-
-데이터 저작권은 Amazon.com, Inc. 또는 그 계열사에 있다. 2018년 미국 5개 도시에서 수행한 배송 경로를 담은 공개 자료에서 실험용 입력을 가공했다. 자료와 가공본의 이용 조건은 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)이다. [공식 데이터 안내](https://registry.opendata.aws/amazon-last-mile-challenges/) · [필드 설명](https://github.com/MIT-CAVE/rc-cli/blob/main/templates/data_structures.md) · [Merchán 외, 데이터셋 논문](https://doi.org/10.1287/trsc.2022.1173)
+[공식 데이터 안내](https://registry.opendata.aws/amazon-last-mile-challenges/) · [필드 설명](https://github.com/MIT-CAVE/rc-cli/blob/main/templates/data_structures.md) · [Merchán 외, 데이터셋 논문](https://doi.org/10.1287/trsc.2022.1173)

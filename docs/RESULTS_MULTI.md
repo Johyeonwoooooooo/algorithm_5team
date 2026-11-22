@@ -1,6 +1,6 @@
 # 다차량 실험 결과: 배정 + 순서
 
-DLA7 2018-08-03의 인접 경로 6대(배송지 923곳)에서, 배송지를 어느 차에 실을지와 방문 순서를 함께 풀었다. 모든 표의 원본은 자동 생성된 [results/multi/SUMMARY.md](results/multi/SUMMARY.md)이고, 이 문서는 그 숫자를 해석한다.
+DLA7 2018-08-03의 인접 경로 6대(배송지 923곳)에서, 배송지를 어느 차에 실을지와 방문 순서를 함께 풀었다. 모든 표의 원본은 자동 생성된 [results/SUMMARY.md](../results/SUMMARY.md)이고, 이 문서는 그 숫자를 해석한다.
 
 ## 한 줄 결론
 
@@ -139,7 +139,7 @@ C2는 처음 계획에 없던 비교다. C는 탐욕법이 배정을 처음부�
 - 한도와 상관없이 유지된 것: C2 < B(두 알고리즘, 다섯 한도 모두), ALNS < SA(세 시나리오, 다섯 한도 모두).
 - 한도에 따라 달라진 것: ALNS의 C는 50만 / 5천에서 B보다 나빴다가 그 뒤로 좋아졌고, SA의 C는 끝까지 B보다 나빴다.
 
-수렴 그래프는 이 PC의 matplotlib이 numpy 버전 충돌로 불러와지지 않아 만들지 못했다. matplotlib이 되는 PC에서 `python summarize.py`를 돌리면 `results/multi/convergence.png`가 생긴다.
+수렴 그래프는 이 PC의 matplotlib이 numpy 버전 충돌로 불러와지지 않아 만들지 못했다. matplotlib이 되는 PC에서 `python summarize.py`를 돌리면 `results/convergence.png`가 생긴다.
 
 ## 탐욕법이 근무시간 상한을 못 맞춘 경우
 
@@ -170,18 +170,20 @@ C2는 처음 계획에 없던 비교다. C는 탐욕법이 배정을 처음부�
 
 ## 다시 돌리는 방법
 
+저장소 폴더에서 실행한다. 결과 파일과 열 이름은 [results/README.md](../results/README.md)에 있다.
+
 ```shell
 python check_multi.py
 python run_multi.py --algo sa          # 또는 greedy, alns, all
-python check_multi.py --results results/multi
+python check_multi.py --results results
 python summarize.py
 ```
 
 반복 한도와 민감도 결과는 다음 명령으로 만들었다.
 
 ```shell
-python run_multi.py --output results/multi/limits/sa2000000_alns20000 --sa-iterations 2000000 --alns-iterations 20000
-python run_multi.py --output results/multi/sensitivity/wait0 --sa-iterations 2000000 --alns-iterations 20000 --wait-weight 0
-python run_multi.py --output results/multi/sensitivity/penalty_half --sa-iterations 2000000 --alns-iterations 20000 --late-second-cost 2.5 --late-stop-cost 300
-python run_multi.py --output results/multi/sensitivity/penalty_double --sa-iterations 2000000 --alns-iterations 20000 --late-second-cost 10 --late-stop-cost 1200
+python run_multi.py --output results/extra/limits/sa2000000_alns20000 --sa-iterations 2000000 --alns-iterations 20000
+python run_multi.py --output results/extra/sensitivity/wait0 --sa-iterations 2000000 --alns-iterations 20000 --wait-weight 0
+python run_multi.py --output results/extra/sensitivity/penalty_half --sa-iterations 2000000 --alns-iterations 20000 --late-second-cost 2.5 --late-stop-cost 300
+python run_multi.py --output results/extra/sensitivity/penalty_double --sa-iterations 2000000 --alns-iterations 20000 --late-second-cost 10 --late-stop-cost 1200
 ```
