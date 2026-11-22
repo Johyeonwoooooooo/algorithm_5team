@@ -2,8 +2,8 @@
 
 python data_fetch_station.py --raw FOLDER
 FOLDER holds the four training files of the Amazon 2021 Last Mile Routing Challenge
-(route_data, package_data, travel_times, actual_sequences .json); see DATASET_CHANGES.md.
-Uses only the Python standard library. The existing data/ and data_fetch.py stay as they are.
+(route_data, package_data, travel_times, actual_sequences .json); see docs/DATASET_CHANGES.md.
+Uses only the Python standard library. Reuses two functions of v1/data_fetch.py.
 """
 import argparse
 from collections import Counter
@@ -13,7 +13,9 @@ import json
 import math
 from pathlib import Path
 from statistics import median
+import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'v1'))      # data_fetch.py lives with the v1 experiment
 from data_fetch import TRAIN, first_records, seconds_from_departure
 
 

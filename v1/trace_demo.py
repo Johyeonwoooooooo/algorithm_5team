@@ -98,7 +98,7 @@ def main():
     problem = RoutingProblem(route)
     print(f"실제 자료의 한 단계 학습 예시 · 경로 {args.route} · 배송지 {len(problem.stops)}곳")
     print(f"{route['id']} · 출발지 {problem.depot} · 예시 시드 {args.seed}")
-    print("아래는 탐색 시작 시점의 온도·허용 폭으로 계산한 설명 예시다. results/v1_순서만/에는 시간 제한 실험의 최종 순서와 지표가 있다.")
+    print("아래는 탐색 시작 시점의 온도·허용 폭으로 계산한 설명 예시다. results/에는 시간 제한 실험의 최종 순서와 지표가 있다.")
     if args.method in ("all", "greedy"):
         greedy_example(problem)
     if args.method != "greedy":
