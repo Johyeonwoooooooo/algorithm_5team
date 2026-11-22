@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>5팀 배송 실험 · 담당자별 작업 안내</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#202c38;font:16px/1.72 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:anywhere}main{max-width:920px;margin:auto;background:white;padding:clamp(22px,5vw,62px)}h1,h2,h3{line-height:1.4;color:#18394c}h1{font-size:clamp(28px,4vw,40px);margin:8px 0 14px}h2{font-size:23px;margin:38px 0 10px;border-top:1px solid #d7e0e4;padding-top:24px}h3{font-size:17px;margin:18px 0 4px}p{margin:8px 0 12px}ul,ol{padding-left:23px}li{margin:5px 0}nav{display:flex;gap:7px 18px;flex-wrap:wrap;border-bottom:2px solid #21475c;padding:12px 0 18px}a{color:#16516a;text-underline-offset:3px}pre{padding:13px 16px;border-left:4px solid #47818b;background:#eff5f5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-all;line-height:1.55}code{font:0.92em/1.55 Consolas,monospace}table{border-collapse:collapse;width:100%;font-size:15px}th,td{border-bottom:1px solid #d5dfe4;padding:8px;text-align:left;vertical-align:top}th{background:#eef2f4}small{color:#536674}strong{color:#173f4e}.scroll{overflow:auto}@media print{main{padding:0}nav{display:none}h2,h3{break-after:avoid}pre,table{break-inside:avoid}body{background:white;font-size:10.5pt}}
+</style></head><body><main>
+<header><small>알고리즘 3분반 · 5팀</small><h1>배송 방문 순서 비교 실험</h1>
+<p>한 차량에 배정된 배송지를 모두 방문할 때, 방문 순서에 따라 이동시간과 지연이 얼마나 달라지는지 비교한다. 세 담당자는 같은 경로를 입력받아 각각 탐욕적 삽입법, SA, ALNS를 실험한다. 조찬웅은 공통 기준을 관리하고 결과를 종합해 발표한다.</p></header>
+<nav aria-label="목차"><a href="#start">시작하기</a><a href="#data">데이터 읽기</a><a href="#greedy">탐욕법 담당</a><a href="#sa">SA 담당</a><a href="#alns">ALNS 담당</a><a href="#submit">전달할 파일</a><a href="#lead">팀장 통합</a></nav>
+<section id="start"><h2>처음 실행할 때</h2><ol>
+<li>ZIP을 풀고 <code>run.py</code>와 이 안내서가 있는 <code>배송실험</code> 폴더에서 터미널을 연다. Python 3.10 이상이면 추가 패키지 설치는 필요하지 않다. Windows에서 <code>python</code> 대신 <code>py -3</code>도 사용할 수 있다.</li>
+<li>아래 명령으로 포함된 예비 결과를 검산한다. 정상이라면 손계산 예제와 실제 경로 24개, 결과 192행에 대한 검산 통과 문구가 출력된다.</li></ol>
+<pre><code>python --version
+python check.py --results results</code></pre>
+<p>각 담당자는 아래 자기 역할의 명령을 실행한다. 빠르게 동작만 보려면 실행 명령에 <code>--limit 1</code>을 추가하고 출력 폴더를 <code>test_one</code>으로 지정한다. 팀에 전달할 결과는 24개 전체 경로로 다시 실행한다. ZIP의 <code>results/</code>는 이미 수행한 예비실험이며, 담당자 결과는 각자의 <code>out_*</code>에 저장한다.</p></section>
+<section id="data"><h2>세 사람이 함께 사용할 데이터</h2>
+<p><strong>실험 입력은 <code>data/routes.json</code> 한 파일이다.</strong> 공식 학습 자료에 기록된 첫 24개 경로를 골라 각 경로의 배송지를 모두 담았다. 배송지 3,389곳(경로당 58~189곳), 물품 5,604개 중 마감이 명시된 물품은 467개다. 전체 자료는 2018년 미국 5개 도시의 경로 9,184개로 구성된다. 팀원이 같은 표본 파일을 사용하면 경로별로 세 결과를 짝지어 비교할 수 있다.</p>
+<table><thead><tr><th>입력 필드</th><th>뜻과 사용 방법</th></tr></thead><tbody>
+<tr><td><code>id, depot, stops</code></td><td>경로 ID, 출발 거점, 해당 경로에서 방문할 배송지 ID 목록. 배송지 ID는 경로 안에서 사용한다.</td></tr>
+<tr><td><code>travel[A][B]</code></td><td>A에서 B로 가는 과거 관측 기반 이동시간(초). 방문 순서를 따라 방향에 맞게 더한다.</td></tr>
+<tr><td><code>windows[A]</code></td><td>A에서 처리할 물품별 [시작, 마감, 서비스 시간]. 모두 초 단위이며 시작과 마감은 출발 시각을 0으로 환산한 값이다. null인 항목에는 해당 시간 제한이 없다.</td></tr>
+<tr><td><code>actual</code></td><td>기사가 실제 방문한 순서. 실험 후 공통 평가기로 점수를 계산해 참고한다.</td></tr></tbody></table>
+<p><strong>첫 경로의 실제 값.</strong> 기사의 첫 구간은 거점 VE에서 TG까지이며 이동시간은 1,509.7초다. TG에는 시간창이 없는 물품 7개가 있고 계획 서비스 시간은 각 26.4초다. 이 순서를 모델에 넣으면 TG에서 다음 배송지로 떠나는 시점은 출발 후 1,509.7 + 7 × 26.4 = 1,694.5초다.</p>
+<h3>공통 평가 규칙</h3><ul>
+<li>거점에서 출발해 각 배송지를 한 번씩 방문하고 마지막 배송지에서 끝낸다. 각 배송지에서 마감이 빠른 물품부터 처리하며, 일찍 도착하면 기다린다. 물품의 처리 완료 시각을 기준으로 지연을 계산한다.</li>
+<li><strong>비용 = 총이동시간(초) + 5 × 물품별 지연시간 합(초) + 600 × 지연 배송지 수.</strong> 한 지점에서 여러 물품이 늦어도 지연 배송지는 한 곳으로 센다. 5와 600은 예비실험에서 선택한 가중치다.</li>
+<li>SA와 ALNS는 같은 탐욕 경로에서 시작한다. 기준 실험은 경로당 탐색 시간 1초, 시드(난수의 시작값) 11·29·47로 3회다. 방법별 평균은 한 경로의 시드 3회를 먼저 평균낸 뒤 24개 경로를 평균낸다.</li>
+</ul></section>
+<section id="greedy"><h2>팀원 1 · 데이터와 탐욕적 삽입법</h2>
+<p><strong>담당 질문</strong>은 “배송지를 하나씩 추가할 때 어느 위치에 넣어야 현재 비용이 가장 적게 늘어나는가?”이다. 이 방법이 만든 경로가 다른 두 팀원의 출발점이다.</p>
+<ol><li><code>data_fetch.py</code>의 <code>normalize()</code>에서 경로·물품·이동시간·실제 방문 순서를 어떻게 연결했는지 확인한다. 원자료 필드와 가공본 필드의 대응을 설명한다.</li>
+<li><code>solvers.py</code>의 <code>greedy()</code>를 확인한다. 배송지별 가장 이른 마감과 ID로 삽입 대상을 정하고, 매번 경로의 모든 삽입 위치를 공통 비용으로 비교한다. 부분 경로 한 개에서 가능한 삽입 위치와 비용을 기록하고 채택한 위치를 표시한다.</li>
+<li>아래 명령으로 24개 경로를 실행한다. <code>by_route.csv</code>에서 greedy 행을 골라 배송지 수, 이동시간, 지연, 계산시간을 정리한다. 전달할 표에는 평균 계산시간과 실제 삽입 예시를 함께 넣는다.</li></ol>
+<pre><code>python run.py --method greedy --output out_greedy
+python check.py --method greedy --results out_greedy</code></pre>
+<p><code>python trace_demo.py --method greedy</code>로 첫 경로의 삽입 한 단계를 볼 수 있다. 세 후보 비용을 비교해 채택한 순서를 설명한다.</p><p><strong>담당 결과물</strong> · 검산된 <code>out_greedy/</code>(48행), 담당 코드, 데이터 항목 설명과 삽입 후보 비용표 1개.</p></section>
+<section id="sa"><h2>팀원 2 · 시뮬레이티드 어닐링(SA)</h2>
+<p><strong>담당 질문</strong>은 “일부 나쁜 변경도 허용하면 같은 시간 안에서 초기 경로를 얼마나 개선하는가?”이다.</p>
+<ol><li><code>solvers.py</code>의 <code>sa()</code>를 확인한다. 두 지점을 교환하거나 한 지점을 다른 위치로 옮긴다. 새 비용이 더 크면 비용 증가량 Δ와 온도 T로 허용 확률 exp(−Δ/T)를 정한다. 탐색 중 가장 좋았던 경로를 반환한다.</li>
+<li>기준 실험을 실행한 뒤 <code>runs.csv</code>에서 같은 경로의 시드별 SA 결과 3개를 뽑는다. 초기 비용, 개선 후 비용, 반복 횟수와 편차를 정리한다. 발표 예시는 교환 또는 이동 한 번의 전후 비용, 온도, 수용 여부를 보여준다.</li>
+<li>탐색 시간을 바꾸어 볼 경우 시드와 경로는 고정하고 <code>--seconds 0.25</code>처럼 한 항목만 바꿔 별도 폴더에 저장한다. 이 결과는 시간 예산의 영향을 설명하는 추가 실험으로 사용한다.</li></ol>
+<pre><code>python run.py --method sa --seconds 1 --seeds 11 29 47 --output out_sa
+python check.py --method sa --results out_sa</code></pre>
+<p><code>python trace_demo.py --method sa</code>로 첫 경로에서 비용이 늘어난 후보의 수용 확률과 실제 난수를 비교한다. 이 출력은 설명용 한 단계 예시다.</p><p><strong>담당 결과물</strong> · 검산된 <code>out_sa/</code>(120행), 담당 코드, 시드별 결과표와 변경 수용 사례 1개.</p></section>
+<section id="alns"><h2>팀원 3 · 적응형 대규모 이웃 탐색(ALNS)</h2>
+<p><strong>담당 질문</strong>은 “여러 배송지를 한꺼번에 제거하고 다시 배치하면 경로가 어떻게 달라지는가?”이다.</p>
+<ol><li><code>solvers.py</code>의 <code>alns()</code>, <code>_destroy()</code>, <code>_repair()</code>를 확인한다. 무작위·우회 비용·가까운 지점 기준으로 여러 곳을 제거한다. 마감 순으로 복구하거나, 최선의 삽입 위치를 놓칠 때 손해가 큰 배송지부터 복구한다.</li>
+<li>같은 경로에서 제거 방법, 뺀 배송지 ID, 재삽입한 위치, 변경 전후 비용을 한 사례로 보여준다. 코드에서 좋은 결과를 만든 방법의 가중치가 어떻게 바뀌는지도 한 문장으로 설명한다.</li>
+<li>기준 실험에서 경로별 평균 비용과 탐욕법 대비 감소량을 구한다. SA와 최종 비교할 때는 같은 컴퓨터에서 측정한 팀장 통합 결과를 사용한다.</li></ol>
+<pre><code>python run.py --method alns --seconds 1 --seeds 11 29 47 --output out_alns
+python check.py --method alns --results out_alns</code></pre>
+<p><code>python trace_demo.py --method alns</code>로 첫 경로에서 제거한 두 배송지의 방문 순번과 방법별 가중치 변화를 확인한다. <code>--route 2</code>처럼 표본 안의 경로를 바꿀 수 있다.</p><p><strong>담당 결과물</strong> · 검산된 <code>out_alns/</code>(120행), 담당 코드, 제거·재삽입 전후 순서와 비용 변화 사례 1개.</p></section>
+<section id="submit"><h2>팀장에게 전달할 파일</h2><p>각자 <strong>담당코드 + 출력 폴더 전체 + 해석 1쪽</strong>을 한 ZIP으로 묶는다. 예를 들어 <code>SA_이름.zip</code> 안에 <code>solvers.py</code>, <code>out_sa/</code>, <code>담당결과.md</code>를 넣는다. 해석은 포함된 <code>담당결과_양식.md</code>를 복사해 채운다. 각자의 작업 사본에서 맡은 함수와 변경 내용을 표시하면 팀장이 합치기 쉽다.</p>
+<table><thead><tr><th>출력 폴더의 파일</th><th>사용할 곳</th></tr></thead><tbody>
+<tr><td><code>runs.csv</code></td><td>실행 1회당 1행. 지연 배송지 수·총지연·총이동·계산시간을 보고, SA·ALNS의 시드별 편차를 확인한다.</td></tr>
+<tr><td><code>by_route.csv</code> / <code>summary.csv</code></td><td>경로별 평균 및 방법별 전체 평균. 발표용 이동시간은 초를 60으로 나눠 분으로 표시한다.</td></tr>
+<tr><td><code>orders.jsonl</code> / <code>settings.json</code></td><td>실제 배송지 ID의 방문 순서와 실행 설정. 누락·중복과 입력 파일 일치를 검증할 때 사용한다.</td></tr>
+</tbody></table><p>48행은 실제 기록 24개와 탐욕법 24개를 합친 값이다. 120행은 여기에 담당 탐색 알고리즘의 72회 실행을 더한 값이다. 각 담당자는 검산 통과 여부, 실행 명령, 수정한 함수, 발견한 한계를 해석에 기록한다.</p></section>
+<section id="lead"><h2>조찬웅 · 통합 비교와 발표</h2><ol>
+<li>담당자별 제출 파일에서 <code>settings.json</code>의 데이터 해시와 경로 ID를 대조한다. 코드 수정이 있다면 역할별 함수만 통합하고 같은 데이터·시드·가중치로 한 컴퓨터에서 다시 실행한다. 공통 평가나 가중치가 바뀌면 검산 코드의 계산식과 문서도 함께 갱신한다.</li>
+<li>아래 두 명령으로 세 방법을 함께 측정하고 192행을 검산한다. <code>runtime_seconds</code>는 초기 탐욕 경로 생성과 해당 방법의 탐색을 합친 계산시간이다. 실제 차량 이동을 추정하는 <code>travel_seconds</code>와 구분해 표에 쓴다.</li>
+<li>발표에는 방법별 평균표와 118개 배송지를 가진 첫 경로 사례를 넣는다. 팀원 사례들은 동일한 경로에서 설명하면 청중이 세 방법의 차이를 따라가기 쉽다.</li></ol>
+<pre><code>python run.py --method all --seconds 1 --seeds 11 29 47 --output out_team
+python check.py --method all --results out_team</code></pre>
+<p><strong>기존 예비실험의 참고값</strong>은 경로당 평균 이동시간 기준 탐욕법 166.2분, SA 158.4분, ALNS 152.5분이다. 세 방법 모두 모형상 지연은 0이었다. 시간 한도로 종료하므로 같은 시드에서도 PC마다 탐색 횟수가 달라질 수 있다. 최종 보고서에는 통합 실행에서 측정한 값과 조건을 함께 쓴다.</p>
+<p>이동시간은 과거 자료에 기초한 추정치이고 서비스 시간은 계획값이다. 한 경로의 세 방법이 모두 마감을 지킨 경우에는 이동시간과 계산시간 차이를 중심으로 해석한다. 결과의 적용 범위는 선정한 표본과 시간 예산이다.</p></section>
+<section><h2>더 많은 경로로 최종 실험을 할 때</h2>
+<p>팀장이 공식 학습 자료에서 공통 표본을 한 번 만들어 배포한다. 아래는 첫 100개 경로를 가져오는 예다. 이 표본에는 예비실험 24개도 포함되므로 처음 보는 경로에서의 성능을 따로 보고할 때는 경로 ID로 구분한다.</p>
+<pre><code>python data_fetch.py --count 100 --output data_100
+python run.py --data data_100/routes.json --method all --seconds 1 --seeds 11 29 47 --output out_100
+python check.py --data data_100/routes.json --results out_100</code></pre>
+<p>전체 원자료 ZIP이 있으면 인터넷 없이도 표본을 만들 수 있다. 원자료 ZIP을 <code>run.py</code> 옆에 두고 첫 명령을 다음으로 바꾼다.</p>
+<pre><code>python data_fetch.py --source-zip "Amazon_Last_Mile_2021_원자료_전체.zip" --count 100 --output data_100</code></pre>
+<p>원자료 전체에는 <code>route_data.json</code>(거점·출발 시각·배송지), <code>package_data.json</code>(배송 물품과 시간 조건), <code>travel_times.json</code>(지점 간 이동시간), <code>actual_sequences.json</code>(기록된 방문 순서) 등이 있다. 공식 학습과 평가 분할은 각각 6,112개와 3,072개 경로다. 역할별 실행기는 이 정보를 경로별로 합친 <code>routes.json</code>을 입력받는다.</p></section>
+<p><small>데이터 저작권 Amazon.com, Inc. 또는 그 계열사. 표본은 원자료에서 경로를 선택하고 시간 필드를 출발 기준 초로 환산한 가공본이다. <a href="https://registry.opendata.aws/amazon-last-mile-challenges/">공식 데이터와 인용 안내</a> · <a href="https://github.com/MIT-CAVE/rc-cli/blob/main/templates/data_structures.md">필드 문서</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></small></p>
+</main></body></html>

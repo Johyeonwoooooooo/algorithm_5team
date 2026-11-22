@@ -1,0 +1,41 @@
+{
+  "dataset": "2021 Amazon Last Mile Routing Research Challenge",
+  "attribution": "Amazon; Merchan et al., 2021 Amazon Last Mile Routing Research Challenge: Data Set",
+  "source": "https://registry.opendata.aws/amazon-last-mile-challenges/",
+  "paper": "https://doi.org/10.1287/trsc.2022.1173",
+  "license": "CC BY-NC 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "selection": "First N route_data.json entries in the official training partition, joined on route ID to three other files. All stops and packages retained. Deterministic convenience sample, no quality or feasibility filtering.",
+  "modifications": "Training subset, UTC windows converted to seconds since route departure; package IDs, dimensions, coordinates and unused fields omitted.",
+  "routes": 24,
+  "dropoffs": 3389,
+  "packages": 5604,
+  "packages_with_end": 467,
+  "source_files": {
+    "route_data": {
+      "url": "https://amazon-last-mile-challenges.s3.us-west-2.amazonaws.com/almrrc2021/almrrc2021-data-training/model_build_inputs/route_data.json",
+      "etag": "\"0e8e657beecb47250edca6f870817ba3-5\"",
+      "bytes_read": 524288,
+      "object_size": 78972162
+    },
+    "package_data": {
+      "url": "https://amazon-last-mile-challenges.s3.us-west-2.amazonaws.com/almrrc2021/almrrc2021-data-training/model_build_inputs/package_data.json",
+      "etag": "\"d9920b53d56c162741ee4ec33fa6d70c-22\"",
+      "bytes_read": 2097152,
+      "object_size": 375437806
+    },
+    "travel_times": {
+      "url": "https://amazon-last-mile-challenges.s3.us-west-2.amazonaws.com/almrrc2021/almrrc2021-data-training/model_build_inputs/travel_times.json",
+      "etag": "\"9c82a5b38140af9de4a958ec16fda58b-106\"",
+      "bytes_read": 8388608,
+      "object_size": 1817146363
+    },
+    "actual_sequences": {
+      "url": "https://amazon-last-mile-challenges.s3.us-west-2.amazonaws.com/almrrc2021/almrrc2021-data-training/model_build_inputs/actual_sequences.json",
+      "etag": "\"a798e309c2ed6679eba0f0845f76d2e1\"",
+      "bytes_read": 262144,
+      "object_size": 9665078
+    }
+  },
+  "sha256_routes_json": "37854982b78a12e5e5f10915ee104a28f025326e65471b50461c7a1e6c531ffa"
+}
