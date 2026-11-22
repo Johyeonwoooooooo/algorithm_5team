@@ -175,7 +175,7 @@ def check_results(routes, results_dir, settings, method):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=PROJECT / "data" / "routes.json")
-    parser.add_argument("--results", type=Path, default=PROJECT / "results")
+    parser.add_argument("--results", type=Path, default=PROJECT / "results" / "v1_순서만")
     parser.add_argument("--method", choices=("all", "greedy", "sa", "alns"),
                         help="검산할 담당 방법. 생략하면 settings.json의 방법을 사용합니다.")
     parser.add_argument("--toy-only", action="store_true", help="손계산과 작은 예제만 검산")

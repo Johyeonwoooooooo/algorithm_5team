@@ -62,13 +62,14 @@ def main():
     parser.add_argument("--data", type=Path, default=ROOT / "data" / "routes.json")
     parser.add_argument("--method", choices=("all", "greedy", "sa", "alns"), default="all",
                         help="Choose the solver to run; actual and greedy are always included")
-    parser.add_argument("--output", type=Path, help="Output folder (default: results or results_METHOD)")
+    parser.add_argument("--output", type=Path,
+                        help="Output folder (default: results/v1_순서만 or results/v1_순서만_METHOD)")
     parser.add_argument("--limit", type=int, help="Use only the first N normalized routes")
     parser.add_argument("--seconds", type=float, default=1.0, help="Search budget per route, method and seed")
     parser.add_argument("--seeds", nargs="+", type=int, default=[11, 29, 47])
     args = parser.parse_args()
     if args.output is None:
-        args.output = ROOT / ("results" if args.method == "all" else f"results_{args.method}")
+        args.output = ROOT / "results" / ("v1_순서만" if args.method == "all" else f"v1_순서만_{args.method}")
     if not 0 < args.seconds < float("inf") or args.limit is not None and args.limit <= 0:
         parser.error("seconds and limit must be positive")
     if len(set(args.seeds)) != len(args.seeds):

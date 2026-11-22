@@ -10,8 +10,8 @@
 <li>ZIP을 풀고 <code>run.py</code>와 이 안내서가 있는 <code>배송실험</code> 폴더에서 터미널을 연다. Python 3.10 이상이면 추가 패키지 설치는 필요하지 않다. Windows에서 <code>python</code> 대신 <code>py -3</code>도 사용할 수 있다.</li>
 <li>아래 명령으로 포함된 예비 결과를 검산한다. 정상이라면 손계산 예제와 실제 경로 24개, 결과 192행에 대한 검산 통과 문구가 출력된다.</li></ol>
 <pre><code>python --version
-python check.py --results results</code></pre>
-<p>각 담당자는 아래 자기 역할의 명령을 실행한다. 빠르게 동작만 보려면 실행 명령에 <code>--limit 1</code>을 추가하고 출력 폴더를 <code>test_one</code>으로 지정한다. 팀에 전달할 결과는 24개 전체 경로로 다시 실행한다. ZIP의 <code>results/</code>는 이미 수행한 예비실험이며, 담당자 결과는 각자의 <code>out_*</code>에 저장한다.</p></section>
+python check.py --results results/v1_순서만</code></pre>
+<p>각 담당자는 아래 자기 역할의 명령을 실행한다. 빠르게 동작만 보려면 실행 명령에 <code>--limit 1</code>을 추가하고 출력 폴더를 <code>test_one</code>으로 지정한다. 팀에 전달할 결과는 24개 전체 경로로 다시 실행한다. ZIP의 <code>results/v1_순서만/</code>은 이미 수행한 예비실험이며, 담당자 결과는 각자의 <code>out_*</code>에 저장한다.</p></section>
 <section id="data"><h2>세 사람이 함께 사용할 데이터</h2>
 <p><strong>실험 입력은 <code>data/routes.json</code> 한 파일이다.</strong> 공식 학습 자료에 기록된 첫 24개 경로를 골라 각 경로의 배송지를 모두 담았다. 배송지 3,389곳(경로당 58~189곳), 물품 5,604개 중 마감이 명시된 물품은 467개다. 전체 자료는 2018년 미국 5개 도시의 경로 9,184개로 구성된다. 팀원이 같은 표본 파일을 사용하면 경로별로 세 결과를 짝지어 비교할 수 있다.</p>
 <table><thead><tr><th>입력 필드</th><th>뜻과 사용 방법</th></tr></thead><tbody>
