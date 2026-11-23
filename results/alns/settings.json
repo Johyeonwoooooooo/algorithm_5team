@@ -40,8 +40,8 @@
     }
   },
   "solver_sha256": "588fb3596f6302ffcf1b5e9f52ba235e48f4bb8c3ef33b3abebeb4d28db69b80",
-  "python": "3.11.7 | packaged by Anaconda, Inc. | (main, Dec 15 2023, 18:05:47) [MSC v.1916 64 bit (AMD64)]",
-  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.7 (main, Jan  7 2024, 23:23:46) [Clang 16.0.3 ]",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
   "iterations": 80000,
   "seeds": [
     11,
